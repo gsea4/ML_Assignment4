@@ -88,7 +88,7 @@ print("Best sigma2: " + str(best_s2))
 sigma = (best_s+best_s2)/2
 K_se = kernel_functions(X, sigma, True)
 K_e = kernel_functions(X, sigma, False)
-
+print(sigma)
 Beta = 1/((20-np.min(data[:,1]))/(np.max(data[:,1]) - np.min(data[:,1])))**2
 C_se = K_se + Beta * np.identity(X.shape[0])
 C_e = K_e + Beta * np.identity(X.shape[0])
