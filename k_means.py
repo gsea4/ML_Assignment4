@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from numpy.linalg import norm as dist
 from PIL import Image
+import time
 
 testing_images_file = open('t10k-images.idx3-ubyte', 'rb')
 testing_images = testing_images_file.read()
@@ -18,9 +19,40 @@ testing_labels = bytearray(testing_labels)
 L = np.array(testing_labels[8:])
 
 def k_means(K, X, M_init):
-    # Assignment Step
-    # Z_t = [for k in range(K)]
-    pass
+    counter = 0
+    previous_j = 0
+    max_count = 100
+    M = M_init
+    labels_matrix = np.zeros((X.shape[0],K))
+    best_distances = np.negative(np.ones((X.shape[0])))
+
+    while counter < max_count:
+        for i in range(X.shape[0]):
+            dist_list = np.array([dist(k - X[i]) for k in M])
+            best_label = np.argmin(dist_list)
+
+            if best_distances[i] == -1:
+                best_distances[i] = dist_list[best_label]
+                labels_matrix[i,best_label] = 1
+
+            if dist_list[best_label] < best_distances[i]:
+                best_distances[i] = dist_list[best_label]
+                labels_matrix[i,:] = 0
+                labels_matrix[i,best_label] = 1
+
+        J = calc_J(labels_matrix, M, X, K)  
+        print(J)
+        if J == previous_j:
+            max_count = counter
+            return labels_matrix, M
+        previous_j = J
+
+        N = labels_matrix.sum(axis=0)
+        M_new = np.zeros((K,X.shape[1]))
+        for k in range(K):
+            M_new[k] = np.array([labels_matrix[i,k] * X[i] for i in range(X.shape[0])]).sum(axis=0)/N[k]
+        M = M_new
+        counter += 1
 
 def calc_J(Z, M, X, K):
     result = 0
@@ -28,71 +60,28 @@ def calc_J(Z, M, X, K):
         result += np.sum([Z[i,k] * dist(X[i] - M[k]) for i in range(X.shape[0])])
     return result
 
-# means_1 = np.random.choice(5000, 10)
-l0 = np.where(L == 0)[0][1]
-l1 = np.where(L == 1)[0][1]
-l2 = np.where(L == 2)[0][1]
-l3 = np.where(L == 3)[0][1]
-l4 = np.where(L == 4)[0][1]
-l5 = np.where(L == 5)[0][1]
-l6 = np.where(L == 6)[0][1]
-l7 = np.where(L == 7)[0][1]
-l8 = np.where(L == 8)[0][1]
-l9 = np.where(L == 9)[0][1]
-means_3 = np.array((l0,l1,l2,l3,l4,l5,l6,l7,l8,l9))
-M_init_1 = X[means_3]
+def k_means_pp_init(X, K):
+    ini_mean = X[np.random.choice(10000,1)]
+    M =[ini_mean]
+    for k in range(1, K):
+        D = np.array([min([dist(x-m)**2 for m in M]) for x in X])
+        prob_D = D/D.sum()
+        prob_cummul_D = prob_D.cumsum()
+        r = np.random.rand()
+        new_index = np.where(r < prob_cummul_D)[0][0]
+        M.append(X[new_index])
+    return np.array(M)
 
-labels_matrix = np.zeros((10000,10))
-best_distances = np.negative(np.ones((10000)))
+means_1 = np.random.choice(10000, 10)
+means_2 = k_means_pp_init(X, 3)
+means_3 = np.array([np.where(L == i)[0][1] for i in range(10)])
 
-counter = 0
-previous_j = 0
-max_count = 100
-M = M_init_1
-while counter < max_count:
-    for i in range(X.shape[0]):
-        dist_list = np.array([dist(k - X[i]) for k in M])
-        best_label = np.argmin(dist_list)
+M_init = means_2
 
-        if best_distances[i] == -1:
-            best_distances[i] = dist_list[best_label]
-            labels_matrix[i,best_label] = 1
+labels, M_r = k_means(3, X, M_init)
+img = [Image.fromarray(M_r[i].reshape((28,28))) for i in range(3)]
+for i in range(len(img)):
+    # img[i].convert('RGB').save("mean_" + str(i) +".png")
+    img[i].show()
 
-        if dist_list[best_label] < best_distances[i]:
-            best_distances[i] = dist_list[best_label]
-            labels_matrix[i,:] = 0
-            labels_matrix[i,best_label] = 1
-
-    j1 = calc_J(labels_matrix, M, X, 10)  
-    print(j1)
-    if j1 == previous_j:
-        max_count = counter
-    previous_j = j1
-
-    N = labels_matrix.sum(axis=0)
-    M_new = np.zeros((10,X.shape[1]))
-    for k in range(10):
-        M_new[k] = np.array([labels_matrix[i,k] * X[i] for i in range(X.shape[0])]).sum(axis=0)/N[k]
-    M = M_new
-    counter += 1
-
-img = Image.fromarray(M[0].reshape((28,28)))
-img.show()
-img = Image.fromarray(M[1].reshape((28,28)))
-img.show()
-img = Image.fromarray(M[2].reshape((28,28)))
-img.show()
-img = Image.fromarray(M[3].reshape((28,28)))
-img.show()
-img = Image.fromarray(M[4].reshape((28,28)))
-img.show()
-img = Image.fromarray(M[5].reshape((28,28)))
-img.show()
-img = Image.fromarray(M[6].reshape((28,28)))
-img.show()
-img = Image.fromarray(M[7].reshape((28,28)))
-img.show()
-img = Image.fromarray(M[8].reshape((28,28)))
-img.show()
-img = Image.fromarray(M[9].reshape((28,28)))
-img.show()
+# comment
