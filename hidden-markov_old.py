@@ -42,8 +42,7 @@ for i in range(1, T):
         Alpha[k,i] = np.log(modelTable[k, rolls[i]-1]) + np.sum(np.log([Alpha[q,i-1] * A[q,k] for q in range(K)]))
         # Alpha[k,i] = modelTable[k,rolls[i]-1]*np.sum([Alpha[q,i-1] * A[q,k] for q in range(K)])
         pass
-
-
+        
 # z_t = np.array([np.argmax(Alpha[range(K),i]) for i in range(T)])
 # normalized = T1[0,:]/np.sum(T1, axis=0)
 

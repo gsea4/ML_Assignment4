@@ -11,6 +11,7 @@ A = np.array([[0.95, 0.05],[0.1, 0.9]])
 rolls = []
 die = []
 current_state = 0
+N = 1000
 for i in range(N):
     face = np.random.choice(X, p=B[current_state])
     rolls.append(face)
@@ -36,6 +37,10 @@ for t in range(1,T):
         # Alpha[k,t] = B[k, rolls[t]] * np.sum([Alpha[i,t-1] * A[i, k] for i in range(K)])
 
 normalized_alpha = Alpha[1,:]/np.sum(Alpha, axis=0)
+x = np.arange(0,N)
+plt.plot(x, normalized_alpha)
+plt.plot(x, die)
+plt.show()
 
 # Backward
 Beta = np.empty((K,T))
@@ -44,8 +49,9 @@ for t in range(T-2, 0, -1):
     for k in range(K):
         Beta[k,t] = logsumexp([Beta[i,t+1] + np.log(B[k, rolls[t+1]]) + np.log(A[i,k]) for i in range(K)])
 
+result = Alpha * Beta
+normalized_result = result[1,]/np.sum(result, axis = 0) 
 x = np.arange(0,N)
-
-plt.plot(x, normalized_alpha)
+plt.plot(x, normalized_result)
 plt.plot(x, die)
 plt.show()
