@@ -10,7 +10,7 @@ A = np.array([[0.95, 0.05],[0.1, 0.9]])
 rolls = []
 die = []
 current_state = 0
-for i in range(1000):
+for i in range(200):
     face = np.random.choice(X, p=modelTable[current_state])
     rolls.append(face)
     die.append(current_state)
@@ -54,9 +54,9 @@ for i in range(1, T):
 z_t = np.array([(T1[1,i])/T1[0,i] for i in range(T)])
 
 
-x = range(0,100)
+x = range(0,200)
 
-plt.plot(x, z_t[:100])
+plt.plot(x, z_t)
 plt.show()
 print("Phew")
 
