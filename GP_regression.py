@@ -85,7 +85,7 @@ print("Best sigma: " + str(best_s))
 print("Best sigma2: " + str(best_s2))
 
 
-sigma = (best_s+best_s2)/2
+sigma = best_s
 K_se = kernel_functions(X, sigma, True)
 K_e = kernel_functions(X, sigma, False)
 print(sigma)

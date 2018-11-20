@@ -96,9 +96,9 @@ X0 = X[np.where(labels[:,0] == 1)]
 X1 = X[np.where(labels[:,1] == 1)]
 X2 = X[np.where(labels[:,2] == 1)]
 
-sample_X0 = X0[np.random.choice(X1.shape[0], 3)]
+sample_X0 = X0[np.random.choice(X0.shape[0], 3)]
 sample_X1 = X1[np.random.choice(X1.shape[0], 3)]
-sample_X2 = X2[np.random.choice(X1.shape[0], 3)]
+sample_X2 = X2[np.random.choice(X2.shape[0], 3)]
 
 for sample in (sample_X0, sample_X1, sample_X2):
     img = [Image.fromarray(sample[i].reshape((28,28))) for i in range(3)]
