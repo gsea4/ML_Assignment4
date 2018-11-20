@@ -72,16 +72,36 @@ def k_means_pp_init(X, K):
         M.append(X[new_index])
     return np.array(M)
 
-means_1 = np.random.choice(10000, 10)
-means_2 = k_means_pp_init(X, 3)
-means_3 = np.array([np.where(L == i)[0][1] for i in range(10)])
+means_1 = X[np.random.choice(10000, 10)]
+means_2 = k_means_pp_init(X, 10)
+means_3 = X[np.array([np.where(L == i)[0][1] for i in range(10)])]
 
-M_init = means_2
+K = 10
+counter = 0
+for M_init in (means_1, means_2, means_3):
+    labels, M_r = k_means(K, X, M_init)
+    img = [Image.fromarray(M_r[i].reshape((28,28))) for i in range(K)]
+    for i in range(len(img)):
+        img[i].convert('RGB').save("mean_" + str(counter) + "__" + str(i) +".png")
+    counter += 1
 
-labels, M_r = k_means(3, X, M_init)
-img = [Image.fromarray(M_r[i].reshape((28,28))) for i in range(3)]
+K = 3
+M_init = k_means_pp_init(X, K)
+labels, M_r = k_means(K, X, M_init)
+img = [Image.fromarray(M_r[i].reshape((28,28))) for i in range(K)]
 for i in range(len(img)):
-    # img[i].convert('RGB').save("mean_" + str(i) +".png")
-    img[i].show()
+    img[i].convert('RGB').save("mean_k++_" + str(i) +".png")
 
-# comment
+X0 = X[np.where(labels[:,0] == 1)]
+X1 = X[np.where(labels[:,1] == 1)]
+X2 = X[np.where(labels[:,2] == 1)]
+
+sample_X0 = X0[np.random.choice(X1.shape[0], 3)]
+sample_X1 = X1[np.random.choice(X1.shape[0], 3)]
+sample_X2 = X2[np.random.choice(X1.shape[0], 3)]
+
+for sample in (sample_X0, sample_X1, sample_X2):
+    img = [Image.fromarray(sample[i].reshape((28,28))) for i in range(3)]
+    for i in range(len(img)):
+        img[i].show()
+        time.sleep(1)
